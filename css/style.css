@@ -3,7 +3,7 @@
 
 body {
     height: 100vh;
-    background: linear-gradient(
+    background: no-repeat linear-gradient(
         #b0c3f3,
         rgba(196, 196, 196, 0)
     );
