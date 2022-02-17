@@ -112,7 +112,7 @@ function newGame(depth = -1, startingPlayer = 1) {
             modal.show()
          }
          else if (board.isTerminal().winner === 'draw') {
-            gameModal.innerHTML = '<span class="clay h1-bleu px-2 px-sm-3 px-md-3">D</span>ROW'
+            gameModal.innerHTML = '<span class="clay h1-blue px-2 px-sm-3 px-md-3">D</span>ROW'
             console.log (gameModal)
             modal.show()
          }
