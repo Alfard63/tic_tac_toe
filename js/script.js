@@ -1,128 +1,143 @@
-// init variables
-const box1 = document.getElementById('box1-child')
-const box2 = document.getElementById('box2-child')
-const box3 = document.getElementById('box3-child')
-const box4 = document.getElementById('box4-child')
-const box5 = document.getElementById('box5-child')
-const box6 = document.getElementById('box6-child')
-const box7 = document.getElementById('box7-child')
-const box8 = document.getElementById('box8-child')
-const box9 = document.getElementById('box9-child')
+import Board from './classes/board.js'
+import Player from './classes/player.js'
+import { hasClass, addClass} from './helpers.js'
 
-var isCrossTurn = true
 
-var crossScore = 0
-var circleScore = 0
+//Create Modal
+const modal = new bootstrap.Modal(document.getElementById('modal'), {
+      keyboard: false,
+      backdrop: 'static'    
+  })
+//Starts a new game with a certain depth and a startingPlayer of 1 if human is going to start
+function newGame(depth = -1, startingPlayer = 1) {
+   //Instantiating a new player, an empty board and modal title
+   const player = new Player(parseInt(depth))
+   const board = new Board(['', '', '', '', '', '', '', '', ''])
+   
+  const gameModal = document.getElementById('modalTitle')
+   gameModal.innerHTML = `
+      <span class="h1-red px-2 px-sm-3 px-md-3">T</span>IC
+      <span class="h1-green px-2 px-sm-3 px-md-3">T</span>AC
+      <span class="h1-blue px-2 px-sm-3 px-md-3">T</span>OE`
 
-var emptyBox = [
-    'box1', 'box2', 'box3',
-    'box4', 'box5', 'box6',
-    'box7', 'box8', 'box9',
-]
+   //Clearing all #Board classes and populating cells HTML
+   const boardDIV = document.getElementById("board")
+   boardDIV.className = ''
+   boardDIV.innerHTML =`
+   <div class="row">
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-0"></div>
+            </div>
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-1"></div>
+            </div>
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-2"></div>
+            </div>
+         </div>
 
-var menuModal = new bootstrap.Modal(document.getElementById('menuModal'), {
-    keyboard: false,
-    backdrop: 'static'
+         <div class="row">
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-3"></div>
+            </div>
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-4"></div>
+            </div>
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-5"></div>
+            </div>
+         </div>
+
+         <div class="row">
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-6"></div>
+            </div>
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-7"></div>
+            </div>
+            <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
+               <div class="box cell-8"></div>
+            </div>
+         </div>
+         `
+
+   //Storing HTML cells in an array
+   const htmlCells = boardDIV.getElementsByClassName('box')
+
+   //Initializing some variables for internal use
+   const starting = parseInt(startingPlayer),
+      maximizing = starting
+   let playerTurn = starting
+
+   //If computer is going to start, choose a random cell as long as it is the center or a corner
+   if (!starting) {
+      const centerAndCorners = [0, 2, 4, 6, 8]
+      const firstChoice = centerAndCorners[Math.floor(Math.random() * centerAndCorners.length)]
+      const symbol = !maximizing ? 'cross' : 'circle'
+      board.insert(symbol, firstChoice)
+      addClass(htmlCells[firstChoice], symbol)
+      addClass(htmlCells[firstChoice].parentNode, 'active')
+      playerTurn = 1 //Switch turns
+   }
+
+   //Adding Click event listener for each cell
+   board.state.forEach((cell, index) => {
+      htmlCells[index].addEventListener('click', () => {
+         //If cell is already occupied or the board is in a terminal state or it's not humans turn, return false
+         if (hasClass(htmlCells[index], 'cross') || hasClass(htmlCells[index], 'circle') || board.isTerminal() || !playerTurn) return false
+         const symbol = maximizing ? 'cross' : 'circle' //Maximizing player is always 'cross'
+         //Update the Board class instance as well as the Board UI
+         board.insert(symbol, index)
+         addClass(htmlCells[index], symbol)
+         addClass(htmlCells[index].parentNode, 'active')
+         playerTurn = 0 //Switch turns
+         //Get computer's best move and update the UI
+         player.getBestMove(board, !maximizing, best => {
+            const symbol = !maximizing ? 'cross' : 'circle'
+            board.insert(symbol, parseInt(best))
+            addClass(htmlCells[best], symbol)
+            addClass(htmlCells[best].parentNode, 'active')
+            playerTurn = 1 //Switch turns
+         })
+
+         //show the modal for victory, loose or draw
+         if((board.isTerminal().winner === 'cross' && symbol === 'cross') || (board.isTerminal().winner === 'circle' && symbol === 'circle')) {
+            gameModal.innerHTML = '<span class="clay h1-green px-2 px-sm-3 px-md-3">W</span>IN'
+            console.log (gameModal)
+            modal.show()
+         }
+         else if ((board.isTerminal().winner === 'cross' && symbol === 'circle') || (board.isTerminal().winner === 'circle' && symbol === 'cross')) {
+            gameModal.innerHTML = '<span class="clay h1-red px-2 px-sm-3 px-md-3">L</span>OOSE'
+            console.log (gameModal)
+            modal.show()
+         }
+         else if (board.isTerminal().winner === 'draw') {
+            gameModal.innerHTML = '<span class="clay h1-bleu px-2 px-sm-3 px-md-3">D</span>ROW'
+            console.log (gameModal)
+            modal.show()
+         }
+      }, false)
+      if (cell) {
+         addClass(htmlCells[index], cell)
+         addClass(htmlCells[index].parentNode, 'active')
+      } 
+   })
+}
+
+   //show the menu modal
+   modal.show()
+   
+document.addEventListener("DOMContentLoaded", () => {
+   //Start a new game when page loads with default values
+   const depth = -1
+   const startingPlayer = 1
+   newGame(depth, startingPlayer)
+   //Start a new game with chosen options when new game button is clicked
+   document.getElementById("newGame").addEventListener('click', () => {
+      const startingDIV = document.getElementById("starting")
+      const starting = startingDIV.options[startingDIV.selectedIndex].value
+      const depthDIV = document.getElementById("depth")
+      const depth = depthDIV.options[depthDIV.selectedIndex].value
+      newGame(depth, starting)
+   })
 })
-
-var winModal = new bootstrap.Modal(document.getElementById('winModal'), {
-    keyboard: false
-  })
-
-  var looseModal = new bootstrap.Modal(document.getElementById('looseModal'), {
-    keyboard: false
-  })
-
-menuModal.show()
-/***********************************************************************************************/
-/************************************* GAME FOR TWO PLAYER *************************************/
-/***********************************************************************************************/
-
-
-// this function determine wich symbol is used to play
-function chooseSymbol() {
-    return isCrossTurn ? 'cross' : 'circle'
-}
-
-
-// this function get the id of the box who was clicked
-// if the box doesn't have the class 'active' so we add 'active' class
-// and add the symbol to his child.
-// we delete the clicked box to the 'emptyBox' array
-// and then we execute the function 'stateOfPlay'
-
-function mClick(id) {
-
-    if (!document.getElementById(id).classList.contains('active')) {
-            document.getElementById(id).classList.add('active')
-            document.getElementById(id + '-child').classList.add(chooseSymbol())
-
-            let boxIndex = emptyBox.indexOf(id)
-
-            emptyBox.splice(boxIndex, 1)
-
-            stateOfPlay(chooseSymbol())
-    }
-
-}
-
-// this function verify if the current symbol win
-// else it verify le loosing condition (all boxes are used)
-// else it change the symbol turn
-
-function stateOfPlay(symbol) {
-
-    if (
-        box1.classList.contains(symbol) && box2.classList.contains(symbol) && box3.classList.contains(symbol) ||
-        box4.classList.contains(symbol) && box5.classList.contains(symbol) && box6.classList.contains(symbol) ||
-        box7.classList.contains(symbol) && box8.classList.contains(symbol) && box9.classList.contains(symbol) ||
-        box1.classList.contains(symbol) && box4.classList.contains(symbol) && box7.classList.contains(symbol) ||
-        box2.classList.contains(symbol) && box5.classList.contains(symbol) && box8.classList.contains(symbol) ||
-        box3.classList.contains(symbol) && box6.classList.contains(symbol) && box9.classList.contains(symbol) ||
-        box1.classList.contains(symbol) && box5.classList.contains(symbol) && box9.classList.contains(symbol) ||
-        box3.classList.contains(symbol) && box5.classList.contains(symbol) && box7.classList.contains(symbol)
-    ) {
-        winModal.show()
-        symbol === 'cross' ? crossScore++ : circleScore++
-        resetBlock()
-    }
-    else if (emptyBox.length === 0) {
-        looseModal.show()
-        resetBlock()
-    }
-    else {
-        isCrossTurn ? isCrossTurn = false : isCrossTurn = true
-        document.getElementById('symbolTurn').classList.remove('cross', 'circle')
-        document.getElementById('symbolTurn').classList.add(chooseSymbol())
-    }
-}
-
-function mOver(id) {
-    if (!document.getElementById(id).classList.contains('active')) {
-        document.getElementById(id + '-child').classList.add(chooseSymbol())
-    }
-}
-
-function mOut(id) {
-    if (!document.getElementById(id).classList.contains('active')) {
-        document.getElementById(id + '-child').classList.remove(chooseSymbol())
-    }
-}
-
-function resetBlock() {
-    for (let i = 1; i < 10; i++) {
-        document.getElementById('box' + i).classList.remove('active')
-        document.getElementById('box' + i + '-child').classList.remove('cross', 'circle')
-    }
-    isCrossTurn = true
-    emptyBox = [
-        'box1', 'box2', 'box3',
-        'box4', 'box5', 'box6',
-        'box7', 'box8', 'box9',
-    ]
-    document.getElementById('symbolTurn').classList.remove('cross', 'circle')
-    document.getElementById('symbolTurn').classList.add(chooseSymbol())
-
-    document.getElementById('crossScore').innerHTML = crossScore
-    document.getElementById('circleScore').innerHTML = circleScore
-}
