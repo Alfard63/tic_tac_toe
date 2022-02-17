@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Iceberg&family=Iceland&display=swap');
 
-/***************/
-/* General style */
-/***************/
 
 body {
     background: no-repeat linear-gradient(#b0c3f3,
@@ -10,11 +7,7 @@ body {
     font-family: 'Iceland', cursive;
 }
 
-/*******************************************************************/
-/************************* modals style ****************************/
-/*******************************************************************/
-
-h1 {
+h1, h2 {
     font-size: 5em;
 }
 
@@ -34,7 +27,7 @@ h1 {
     color: #0044ff;
 }
 
-.h1-blue, .h1-green, .h1-red, #menuModal button {
+.h1-blue, .h1-green, .h1-red {
     background-color: whitesmoke;
     border-radius: 0.3em;
     box-shadow:
@@ -43,19 +36,17 @@ h1 {
         0.3em 0.3em 0.7em #839ad7;
 }
 
-/* WIN MODAL */
-.modal-content{
-height: 70vh;
-background: rgba( 255, 255, 255, 0.1 );
-box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-backdrop-filter: blur( 7.5px );
--webkit-backdrop-filter: blur( 7.5px );
-border-radius: 5em;
+/*******************************************************************/
+
+/***************/
+/* Modal style */
+/***************/
+
+#modal .clay {
+    background: rgba(185, 191, 240, 0.363);
+    backdrop-filter: blur( 3.5px );
 }
 
-
-
-/*******************************************************************/
 
 /***************/
 /* Grid style */
@@ -66,6 +57,11 @@ border-radius: 5em;
     height: 120px;
 }
 
+.box{
+    height: 100%;
+    width: 100%;
+}
+
 .col, button {
     border-radius: 2.5em;
     background: whitesmoke;
@@ -73,7 +69,6 @@ border-radius: 5em;
         inset -0.6em -0.6em 1em #bfd1ff,
         inset 0.4em 0.4em 0.5em #eff3ff,
         0.8em 0.8em 2em #839ad7;
-    transition: box-shadow 0.7s;
 }
 
 .col:hover, .col.active, button:hover {
@@ -100,42 +95,23 @@ border-radius: 5em;
     position: absolute;
 }
 
-.col-12 .cross {
-    height: 45px;
-    width: 18px;
-}
-
-.col-12 .cross::after {
-    height: 18px;
-    left: -14px;
-    top: 14px;
-    width: 45px;
-}
-
 /***************/
 /* circle style */
 /***************/
 
-.col .circle {
+.circle {
     border-radius: 50%;
-}
-
-.col-12 .circle {
-    border: solid 13px #009b00;
-    border-radius: 50%;
-    height: 45px;
-    width: 45px;
 }
 
 /*******************************************************************/
 
-@media screen and (max-width: 280px) {
+@media screen and (max-width: 300px) {
 
-    h1 {
+    h1, h2 {
         font-size: 2.6em;
     }
 
-    #menuModal button {
+    #modal button {
         font-size: 2em
     }
 
@@ -165,13 +141,13 @@ border-radius: 5em;
 
 }
 
-@media screen and (min-width: 281px) and (max-width: 576px) {
+@media screen and (min-width: 301px) and (max-width: 576px) {
 
-    h1 {
+    h1, h2 {
         font-size: 3em;
     }
 
-    #menuModal button {
+    #modal button {
         font-size: 2em
     }
 
@@ -203,19 +179,19 @@ border-radius: 5em;
 
 @media screen and (min-width: 577px) {
 
-    .col .cross {
+    .cross {
         height: 100px;
         width: 35px;
     }
 
-    .col .cross::after {
+    .cross::after {
         height: 35px;
         left: -33px;
         top: 33px;
         width: 100px;
     }
 
-    .col .circle {
+    .circle {
         border: solid 30px #009b00;
         height: 100px;
         width: 100px;
