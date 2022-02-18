@@ -63,6 +63,7 @@ function newGame(depth = -1, startingPlayer = 1) {
    //Initializing some variables for internal use
    const starting = parseInt(startingPlayer),
       maximizing = starting
+   let symbol = 'cross'
    let playerTurn = starting
    
    if (numberOfPlayers === 1) {
@@ -70,7 +71,7 @@ function newGame(depth = -1, startingPlayer = 1) {
       if (!starting) {
          const centerAndCorners = [0, 2, 4, 6, 8]
          const firstChoice = centerAndCorners[Math.floor(Math.random() * centerAndCorners.length)]
-         const symbol = !maximizing ? 'cross' : 'circle'
+         symbol = !maximizing ? 'cross' : 'circle'
          board.insert(symbol, firstChoice)
          addClass(htmlCells[firstChoice], symbol)
          addClass(htmlCells[firstChoice].parentNode, 'active')
@@ -83,33 +84,47 @@ function newGame(depth = -1, startingPlayer = 1) {
       htmlCells[index].addEventListener('click', () => {
          //If cell is already occupied or the board is in a terminal state or it's not humans turn, return false
          if (hasClass(htmlCells[index], 'cross') || hasClass(htmlCells[index], 'circle') || board.isTerminal() ||(!playerTurn && numberOfPlayers === 1) ) return false
-         const symbol = playerTurn ? 'cross' : 'circle'
+         if (numberOfPlayers === 1) { 
+            symbol = maximizing ? 'cross' : 'circle'
+         }
+         else {
+            symbol = playerTurn ? 'cross' : 'circle'
+         }
+         
 
          //Update the Board class instance as well as the Board UI
          board.insert(symbol, index)
          addClass(htmlCells[index], symbol)
          addClass(htmlCells[index].parentNode, 'active')
-
-         playerTurn = !playerTurn //Switch turns
+         if (numberOfPlayers === 1) { 
+            playerTurn = 0
+         }
+         else {
+            playerTurn = playerTurn ? 0 : 1
+         }
+          //Switch turns
          
-         if (numberOfPlayers === 1) {
+         let aiWaitingTime = Math.floor((Math.random() * 300) + 1000)
+         function delay(time) {
+               return new Promise(resolve => setTimeout(resolve, time));
+            }
+        
+            if (numberOfPlayers === 1) {
             //Get computer's best move and update the UI
             player.getBestMove(board, !maximizing, best => {
             const symbol = !maximizing ? 'cross' : 'circle'
             board.insert(symbol, parseInt(best))
-            addClass(htmlCells[best], symbol)
-            addClass(htmlCells[best].parentNode, 'active')
-            playerTurn = 1 //Switch turns
+               addClass(htmlCells[best], symbol)
+               addClass(htmlCells[best].parentNode, 'active')
+               playerTurn = 1 //Switch turns 
+            
+           
          })
-         } 
+         }
          
          //show the modal for victory, loose or draw
          
-         if(numberOfPlayers === 1 && ((board.isTerminal().winner === 'cross' && symbol === 'cross') || (board.isTerminal().winner === 'circle' && symbol === 'circle'))) {
-            modalTitle.innerHTML = `<span class="clay h1-green px-2 px-sm-3 px-md-3">W</span>IN`
-            modal.show()
-         }
-         else if (numberOfPlayers === 2 && ((board.isTerminal().winner === 'cross' && symbol === 'cross') || (board.isTerminal().winner === 'circle' && symbol === 'circle'))) {
+         if ((board.isTerminal().winner === 'cross' && symbol === 'cross') || (board.isTerminal().winner === 'circle' && symbol === 'circle')) {
             modalTitle.classList.add('d-flex','flex-column', 'justify-content-center', 'align-items-center')
             modalTitle.innerHTML = `<div><span class="clay h1-green px-2 px-sm-3 px-md-3">W</span>IN</div>
                <span class=" py-2 ${board.isTerminal().winner}"></span>
@@ -117,11 +132,11 @@ function newGame(depth = -1, startingPlayer = 1) {
             modal.show()
          }
          else if (numberOfPlayers === 1 && ((board.isTerminal().winner === 'cross' && symbol === 'circle') || (board.isTerminal().winner === 'circle' && symbol === 'cross'))) {
-            modalTitle.innerHTML = '<span class="clay h1-red px-2 px-sm-3 px-md-3">L</span>OOSE'
+            modalTitle.innerHTML = '<div><span class="clay h1-red px-2 px-sm-3 px-md-3">L</span>OOSE</div>'
             modal.show()
          }
          else if (board.isTerminal().winner === 'draw') {
-            modalTitle.innerHTML = '<span class="clay h1-blue px-2 px-sm-3 px-md-3">D</span>ROW'
+            modalTitle.innerHTML = '<div><span class="clay h1-blue px-2 px-sm-3 px-md-3">D</span>RAW</div>'
             modal.show()
          }
       }, false)
