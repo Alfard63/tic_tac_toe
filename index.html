@@ -16,30 +16,53 @@
     <!-- modal -->
     <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content bg-transparent border-0 pt-5">
-                <div id="modal-body" class="modal-body clay p-5">
-                    <h2 id="modalTitle" class="text-dark fw-bold"></h2>
-                    <div class="mt-2 mt-lg-3 fs-4 fw-bold">
-                        <div class="field mb-2 mb-lg-4">
-                            <label for="starting">Starting Player</label>
-                            <select class="form-select" id="starting">
-                                <option value="1">Human</option>
-                                <option value="0">Computer</option>
-                            </select>
+            <div class="modal-content bg-transparent border-0 pt-3">
+                <div id="modal-body" class="modal-body clay p-3">
+                    <h2 id="modalTitle" class="text-dark fw-bold"></h2> 
+                    <div class="row mx-2">
+                        <div class="col-12 fs-3 fw-bold">
+                            <h3 class="fw-bold fs-2 py-3">CHOOSE A GAME MODE</h3>
+                            <ul class="nav nav-tabs nav-fill bg-transparent border-0" id="myTab">
+                                <li class="nav-item">
+                                    <a id="1Player" href="#tab1Player" class="nav-link link-dark bg-transparent border-0 active"
+                                        data-bs-toggle="tab">
+                                        1 PLAYER
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="2Players" href="#tab2Players" class="nav-link link-dark bg-transparent border-0"
+                                        data-bs-toggle="tab">
+                                        2 PLAYERS
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="field mb-2 mb-lg-4">
-                            <label for="depth">Difficulty</label>
-                            <select class="form-select" id="depth">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option selected="selected" value="-1">Unlimited</option>
-                            </select>
+                    </div>
+                    <div class="tab-content fs-3 fw-bold">
+                        <div class="tab-pane fade show active" id="tab1Player">
+                            <div class="field mb-2 mb-lg-4">
+                                <label for="starting">Starting Player</label>
+                                <select class="form-select" id="starting">
+                                    <option value="1">Human</option>
+                                    <option value="0">Computer</option>
+                                </select>
+                            </div>
+                            <div class="field mb-2 mb-lg-4">
+                                <label for="depth">Difficulty</label>
+                                <select class="form-select" id="depth">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option selected="selected" value="-1">Unlimited</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade text-center" id="tab2Players">
                         </div>
                     </div>
                     <button id="newGame" class="mx-auto my-3 px-4 fw-bold py-1 py-md-2 bg-transparent border-0 fs-2"
-                        data-bs-dismiss="modal">New Game</button>`
+                    data-bs-dismiss="modal">New Game</button>
                 </div>
             </div>
         </div>

@@ -25,12 +25,6 @@ class Board {
      * @return {Boolean} boolean represent success of the operation
      */
     insert(symbol, position) {
-        if (![0, 1, 2, 3, 4, 5, 6, 7, 8].includes(position)) {
-            throw new Error(`Cell index ${position} does not exist!`)
-        }
-        if (!['cross', 'circle'].includes(symbol)) {
-            throw new Error('The symbol can only be x or o!')
-        }
         if (this.state[position]) {
             return false
         }
@@ -49,7 +43,7 @@ class Board {
 
     /**
      * Checks if the board has a terminal state ie. a player wins or the board is full with no winner
-     * @return {Object} an object containing the winner, direction of winning and row number
+     * @return {Object} an object containing the winner symbol
      */
     isTerminal() {
         //Return False if board in empty
