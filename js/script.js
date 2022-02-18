@@ -1,15 +1,16 @@
 import Board from './classes/board.js'
 import Player from './classes/player.js'
-import { hasClass, addClass} from './helpers.js'
+import { hasClass, addClass } from './helpers.js'
 
 //Create Modal
 const modal = new bootstrap.Modal(document.getElementById('modal'), {
-      keyboard: false,
-      backdrop: 'static'    
-  })
+   keyboard: false,
+   backdrop: 'static'
+})
 const modalTitle = document.getElementById('modalTitle')
 
-let numberOfPlayers = 1 
+let numberOfPlayers = 1
+let waitingTime = Math.floor((Math.random() * 300) + 1000)
 
 //Starts a new game with a certain depth and a startingPlayer of 1 if human is going to start
 function newGame(depth = -1, startingPlayer = 1) {
@@ -20,7 +21,7 @@ function newGame(depth = -1, startingPlayer = 1) {
    //Clearing all #Board classes and populating cells HTML
    const boardDIV = document.getElementById("board")
    boardDIV.className = ''
-   boardDIV.innerHTML =`
+   boardDIV.innerHTML = `
    <div class="row">
             <div class="col p-1 p-sm-2 m-1 m-sm-2 d-flex align-items-center justify-content-center">
                <div class="box cell-0"></div>
@@ -65,7 +66,7 @@ function newGame(depth = -1, startingPlayer = 1) {
       maximizing = starting
    let symbol = 'cross'
    let playerTurn = starting
-   
+
    if (numberOfPlayers === 1) {
       //If computer is going to start, choose a random cell as long as it is the center or a corner
       if (!starting) {
@@ -78,79 +79,80 @@ function newGame(depth = -1, startingPlayer = 1) {
          playerTurn = 1 //Switch turns
       }
    }
-   
+
    //Adding Click event listener for each cell
    board.state.forEach((cell, index) => {
       htmlCells[index].addEventListener('click', () => {
          //If cell is already occupied or the board is in a terminal state or it's not humans turn, return false
-         if (hasClass(htmlCells[index], 'cross') || hasClass(htmlCells[index], 'circle') || board.isTerminal() ||(!playerTurn && numberOfPlayers === 1) ) return false
-         if (numberOfPlayers === 1) { 
+         if (hasClass(htmlCells[index], 'cross') || hasClass(htmlCells[index], 'circle') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
+         if (numberOfPlayers === 1) {
             symbol = maximizing ? 'cross' : 'circle'
          }
          else {
             symbol = playerTurn ? 'cross' : 'circle'
          }
-         
+
 
          //Update the Board class instance as well as the Board UI
          board.insert(symbol, index)
          addClass(htmlCells[index], symbol)
          addClass(htmlCells[index].parentNode, 'active')
-         if (numberOfPlayers === 1) { 
+
+         //Switch turns
+         if (numberOfPlayers === 1) {
             playerTurn = 0
          }
          else {
             playerTurn = playerTurn ? 0 : 1
          }
-          //Switch turns
-         
-         let aiWaitingTime = Math.floor((Math.random() * 300) + 1000)
-         function delay(time) {
-               return new Promise(resolve => setTimeout(resolve, time));
-            }
-        
+         //start waiting time 
+         setTimeout(() => {
+            console.log(waitingTime)
             if (numberOfPlayers === 1) {
-            //Get computer's best move and update the UI
-            player.getBestMove(board, !maximizing, best => {
-            const symbol = !maximizing ? 'cross' : 'circle'
-            board.insert(symbol, parseInt(best))
-               addClass(htmlCells[best], symbol)
-               addClass(htmlCells[best].parentNode, 'active')
-               playerTurn = 1 //Switch turns 
-            
-           
-         })
-         }
-         
-         //show the modal for victory, loose or draw
-         
-         if ((board.isTerminal().winner === 'cross' && symbol === 'cross') || (board.isTerminal().winner === 'circle' && symbol === 'circle')) {
-            modalTitle.classList.add('d-flex','flex-column', 'justify-content-center', 'align-items-center')
-            modalTitle.innerHTML = `<div><span class="clay h1-green px-2 px-sm-3 px-md-3">W</span>IN</div>
+               waitingTime = Math.floor((Math.random() * 300) + 1000)
+               //Get computer's best move and update the UI
+               player.getBestMove(board, !maximizing, best => {
+                  const symbol = !maximizing ? 'cross' : 'circle'
+                  board.insert(symbol, parseInt(best))
+
+                  addClass(htmlCells[best], symbol)
+                  addClass(htmlCells[best].parentNode, 'active')
+                  playerTurn = 1 //Switch turns
+
+
+               })
+            }
+
+            //show the modal for victory, loose or draw
+
+            if ((board.isTerminal().winner === 'cross' && symbol === 'cross') || (board.isTerminal().winner === 'circle' && symbol === 'circle')) {
+               modalTitle.classList.add('d-flex', 'flex-column', 'justify-content-center', 'align-items-center')
+               modalTitle.innerHTML = `<div><span class="clay h1-green px-2 px-sm-3 px-md-3">W</span>IN</div>
                <span class=" py-2 ${board.isTerminal().winner}"></span>
             `
-            modal.show()
-         }
-         else if (numberOfPlayers === 1 && ((board.isTerminal().winner === 'cross' && symbol === 'circle') || (board.isTerminal().winner === 'circle' && symbol === 'cross'))) {
-            modalTitle.innerHTML = '<div><span class="clay h1-red px-2 px-sm-3 px-md-3">L</span>OOSE</div>'
-            modal.show()
-         }
-         else if (board.isTerminal().winner === 'draw') {
-            modalTitle.innerHTML = '<div><span class="clay h1-blue px-2 px-sm-3 px-md-3">D</span>RAW</div>'
-            modal.show()
-         }
+               modal.show()
+            }
+            else if (numberOfPlayers === 1 && ((board.isTerminal().winner === 'cross' && symbol === 'circle') || (board.isTerminal().winner === 'circle' && symbol === 'cross'))) {
+               modalTitle.innerHTML = '<div><span class="clay h1-red px-2 px-sm-3 px-md-3">L</span>OOSE</div>'
+               modal.show()
+            }
+            else if (board.isTerminal().winner === 'draw') {
+               modalTitle.innerHTML = '<div><span class="clay h1-blue px-2 px-sm-3 px-md-3">D</span>RAW</div>'
+               modal.show()
+            }
+         }, waitingTime) 
       }, false)
       if (cell) {
          addClass(htmlCells[index], cell)
          addClass(htmlCells[index].parentNode, 'active')
-      } 
+      }
    })
 }
 
-   
+
 document.addEventListener("DOMContentLoaded", () => {
-   
- 
+
+
    modalTitle.innerHTML = `
       <span class="h1-red px-2 px-sm-3 px-md-3">T</span>IC
       <span class="h1-green px-2 px-sm-3 px-md-3">T</span>AC
@@ -166,14 +168,15 @@ document.addEventListener("DOMContentLoaded", () => {
    })
    document.getElementById("2Players").addEventListener('click', () => {
       numberOfPlayers = 2
+      waitingTime = 0
    })
 
    //Start a new game with chosen options when new game button is clicked
    document.getElementById("newGame").addEventListener('click', () => {
-         const startingDIV = document.getElementById("starting")
-         const starting = startingDIV.options[startingDIV.selectedIndex].value
-         const depthDIV = document.getElementById("depth")
-         const depth = depthDIV.options[depthDIV.selectedIndex].value
-         newGame(depth, starting)
+      const startingDIV = document.getElementById("starting")
+      const starting = startingDIV.options[startingDIV.selectedIndex].value
+      const depthDIV = document.getElementById("depth")
+      const depth = depthDIV.options[depthDIV.selectedIndex].value
+      newGame(depth, starting)
    })
 })
