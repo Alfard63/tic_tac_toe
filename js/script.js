@@ -1,6 +1,6 @@
 import Board from './classes/board.js'
 import Player from './classes/player.js'
-import { hasClass, addClass } from './helpers.js'
+import { hasClass, addClass, removeClass } from './helpers.js'
 
 //Create Modal
 const modal = new bootstrap.Modal(document.getElementById('modal'), {
@@ -66,6 +66,9 @@ function newGame(depth = -1, startingPlayer = 1) {
       maximizing = starting
    let symbol = 'cross'
    let playerTurn = starting
+   console.log('create variable: ' + symbol)
+   if (numberOfPlayers === 2) { playerTurn = 1 }
+   
 
    if (numberOfPlayers === 1) {
       //If computer is going to start, choose a random cell as long as it is the center or a corner
@@ -73,6 +76,7 @@ function newGame(depth = -1, startingPlayer = 1) {
          const centerAndCorners = [0, 2, 4, 6, 8]
          const firstChoice = centerAndCorners[Math.floor(Math.random() * centerAndCorners.length)]
          symbol = !maximizing ? 'cross' : 'circle'
+         console.log('AI play: ' + symbol)
          board.insert(symbol, firstChoice)
          addClass(htmlCells[firstChoice], symbol)
          addClass(htmlCells[firstChoice].parentNode, 'active')
@@ -80,17 +84,41 @@ function newGame(depth = -1, startingPlayer = 1) {
       }
    }
 
-   //Adding Click event listener for each cell
+   //Adding Click, Mouseenter and mouseout events listener for each cell
    board.state.forEach((cell, index) => {
-      htmlCells[index].addEventListener('click', () => {
-         //If cell is already occupied or the board is in a terminal state or it's not humans turn, return false
-         if (hasClass(htmlCells[index], 'cross') || hasClass(htmlCells[index], 'circle') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
+      htmlCells[index].parentNode.addEventListener('mouseover', () => {
+         if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
          if (numberOfPlayers === 1) {
             symbol = maximizing ? 'cross' : 'circle'
          }
          else {
             symbol = playerTurn ? 'cross' : 'circle'
          }
+         addClass(htmlCells[index], symbol)
+      }, false)
+
+      htmlCells[index].parentNode.addEventListener('mouseout', () => {
+         if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
+         if (numberOfPlayers === 1) {
+            symbol = maximizing ? 'cross' : 'circle'
+         }
+         else {
+            symbol = playerTurn ? 'cross' : 'circle'
+         }
+         removeClass(htmlCells[index], symbol)
+      }, false)
+
+      htmlCells[index].parentNode.addEventListener('click', () => {
+         //If cell is already occupied or the board is in a terminal state or it's not humans turn, return false
+         if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
+         if (numberOfPlayers === 1) {
+            symbol = maximizing ? 'cross' : 'circle'
+            console.log(symbol)
+          }
+         else {
+            symbol = playerTurn ? 'cross' : 'circle'
+            console.log(symbol)
+         } 
 
 
          //Update the Board class instance as well as the Board UI
@@ -128,7 +156,7 @@ function newGame(depth = -1, startingPlayer = 1) {
             if ((board.isTerminal().winner === 'cross' && symbol === 'cross') || (board.isTerminal().winner === 'circle' && symbol === 'circle')) {
                modalTitle.classList.add('d-flex', 'flex-column', 'justify-content-center', 'align-items-center')
                modalTitle.innerHTML = `<div><span class="clay h1-green px-2 px-sm-3 px-md-3">W</span>IN</div>
-               <span class=" py-2 ${board.isTerminal().winner}"></span>
+               <span class="py-2 ${board.isTerminal().winner}"></span>
             `
                modal.show()
             }
@@ -142,6 +170,9 @@ function newGame(depth = -1, startingPlayer = 1) {
             }
          }, waitingTime) 
       }, false)
+      
+
+
       if (cell) {
          addClass(htmlCells[index], cell)
          addClass(htmlCells[index].parentNode, 'active')
