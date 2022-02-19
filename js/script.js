@@ -7,10 +7,17 @@ const modal = new bootstrap.Modal(document.getElementById('modal'), {
    keyboard: false,
    backdrop: 'static'
 })
-const modalTitle = document.getElementById('modalTitle')
+const modalTitle = document.getElementById('modalTitle') 
 
+//Initializing sound effects
+const looseSong = new Audio('../songs/loose.mp3')
+const winSong = new Audio('../songs/win.wav')
+const clickSong = new Audio('../songs/click.ogg')
+
+//Initializing some variables
 let numberOfPlayers = 1
 let waitingTime = Math.floor((Math.random() * 300) + 1000)
+
 
 //Starts a new game with a certain depth and a startingPlayer of 1 if human is going to start
 function newGame(depth = -1, startingPlayer = 1) {
@@ -78,6 +85,7 @@ function newGame(depth = -1, startingPlayer = 1) {
          symbol = !maximizing ? 'cross' : 'circle'
          console.log('AI play: ' + symbol)
          board.insert(symbol, firstChoice)
+         clickSong.play()
          addClass(htmlCells[firstChoice], symbol)
          addClass(htmlCells[firstChoice].parentNode, 'active')
          playerTurn = 1 //Switch turns
@@ -109,6 +117,7 @@ function newGame(depth = -1, startingPlayer = 1) {
       }, false)
 
       htmlCells[index].parentNode.addEventListener('click', () => {
+         clickSong.play()
          //If cell is already occupied or the board is in a terminal state or it's not humans turn, return false
          if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
          if (numberOfPlayers === 1) {
@@ -142,7 +151,7 @@ function newGame(depth = -1, startingPlayer = 1) {
                player.getBestMove(board, !maximizing, best => {
                   const symbol = !maximizing ? 'cross' : 'circle'
                   board.insert(symbol, parseInt(best))
-
+                  clickSong.play()
                   addClass(htmlCells[best], symbol)
                   addClass(htmlCells[best].parentNode, 'active')
                   playerTurn = 1 //Switch turns
@@ -158,14 +167,17 @@ function newGame(depth = -1, startingPlayer = 1) {
                modalTitle.innerHTML = `<div><span class="clay h1-green px-2 px-sm-3 px-md-3">W</span>IN</div>
                <span class="py-2 ${board.isTerminal().winner}"></span>
             `
+            winSong.play()
                modal.show()
             }
             else if (numberOfPlayers === 1 && ((board.isTerminal().winner === 'cross' && symbol === 'circle') || (board.isTerminal().winner === 'circle' && symbol === 'cross'))) {
                modalTitle.innerHTML = '<div><span class="clay h1-red px-2 px-sm-3 px-md-3">L</span>OOSE</div>'
+               looseSong.play()
                modal.show()
             }
             else if (board.isTerminal().winner === 'draw') {
                modalTitle.innerHTML = '<div><span class="clay h1-blue px-2 px-sm-3 px-md-3">D</span>RAW</div>'
+               looseSong.play()
                modal.show()
             }
          }, waitingTime) 
@@ -204,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
    //Start a new game with chosen options when new game button is clicked
    document.getElementById("newGame").addEventListener('click', () => {
+      clickSong.play()
       const startingDIV = document.getElementById("starting")
       const starting = startingDIV.options[startingDIV.selectedIndex].value
       const depthDIV = document.getElementById("depth")
