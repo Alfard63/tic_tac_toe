@@ -92,7 +92,7 @@ function newGame(depth = -1, startingPlayer = 1) {
       }
    }
 
-   //Adding Click, Mouseenter and mouseout events listener for each cell
+   //Adding Click, Mouseenter and mouseleave events listener for each cell
    board.state.forEach((cell, index) => {
       htmlCells[index].parentNode.addEventListener('mouseenter', () => {
          if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
@@ -103,7 +103,7 @@ function newGame(depth = -1, startingPlayer = 1) {
             symbol = playerTurn ? 'cross' : 'circle'
          }
          addClass(htmlCells[index], symbol)
-      }, false)
+      }, true)
 
       htmlCells[index].parentNode.addEventListener('mouseleave', () => {
          if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
@@ -114,7 +114,7 @@ function newGame(depth = -1, startingPlayer = 1) {
             symbol = playerTurn ? 'cross' : 'circle'
          }
          removeClass(htmlCells[index], symbol)
-      }, false)
+      }, true)
 
       htmlCells[index].parentNode.addEventListener('click', () => {
          clickSong.play()
@@ -181,7 +181,7 @@ function newGame(depth = -1, startingPlayer = 1) {
                modal.show()
             }
          }, waitingTime) 
-      }, false)
+      }, true)
       
 
 
@@ -208,11 +208,11 @@ document.addEventListener("DOMContentLoaded", () => {
    //Define the number of player
    document.getElementById("1Player").addEventListener('click', () => {
       numberOfPlayers = 1
-   })
+   }, true)
    document.getElementById("2Players").addEventListener('click', () => {
       numberOfPlayers = 2
       waitingTime = 0
-   })
+   }, true)
 
    //Start a new game with chosen options when new game button is clicked
    document.getElementById("newGame").addEventListener('click', () => {
@@ -222,5 +222,5 @@ document.addEventListener("DOMContentLoaded", () => {
       const depthDIV = document.getElementById("depth")
       const depth = depthDIV.options[depthDIV.selectedIndex].value
       newGame(depth, starting)
-   })
+   }, true)
 })
