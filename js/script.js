@@ -94,7 +94,7 @@ function newGame(depth = -1, startingPlayer = 1) {
 
    //Adding Click, Mouseenter and mouseout events listener for each cell
    board.state.forEach((cell, index) => {
-      htmlCells[index].parentNode.addEventListener('mouseover', () => {
+      htmlCells[index].parentNode.addEventListener('mouseenter', () => {
          if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
          if (numberOfPlayers === 1) {
             symbol = maximizing ? 'cross' : 'circle'
@@ -105,7 +105,7 @@ function newGame(depth = -1, startingPlayer = 1) {
          addClass(htmlCells[index], symbol)
       }, false)
 
-      htmlCells[index].parentNode.addEventListener('mouseout', () => {
+      htmlCells[index].parentNode.addEventListener('mouseleave', () => {
          if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
          if (numberOfPlayers === 1) {
             symbol = maximizing ? 'cross' : 'circle'
