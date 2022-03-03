@@ -94,7 +94,7 @@ function newGame(depth = -1, startingPlayer = 1) {
 
    //Adding Click, Mouseenter and mouseleave events listener for each cell
    board.state.forEach((cell, index) => {
-      htmlCells[index].parentNode.addEventListener('mouseenter', () => {
+      htmlCells[index].parentNode.addEventListener('mouseenter', (event) => {
          if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
          if (numberOfPlayers === 1) {
             symbol = maximizing ? 'cross' : 'circle'
@@ -103,9 +103,10 @@ function newGame(depth = -1, startingPlayer = 1) {
             symbol = playerTurn ? 'cross' : 'circle'
          }
          addClass(htmlCells[index], symbol)
-      }, true)
+         event.stopPropagation()
+      })
 
-      htmlCells[index].parentNode.addEventListener('mouseleave', () => {
+      htmlCells[index].parentNode.addEventListener('mouseleave', (event) => {
          if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
          if (numberOfPlayers === 1) {
             symbol = maximizing ? 'cross' : 'circle'
@@ -114,9 +115,10 @@ function newGame(depth = -1, startingPlayer = 1) {
             symbol = playerTurn ? 'cross' : 'circle'
          }
          removeClass(htmlCells[index], symbol)
-      }, true)
+         event.stopPropagation()
+      })
 
-      htmlCells[index].parentNode.addEventListener('click', () => {
+      htmlCells[index].parentNode.addEventListener('click', (event) => {
          clickSong.play()
          //If cell is already occupied or the board is in a terminal state or it's not humans turn, return false
          if (hasClass(htmlCells[index].parentNode, 'active') || board.isTerminal() || (!playerTurn && numberOfPlayers === 1)) return false
@@ -146,7 +148,7 @@ function newGame(depth = -1, startingPlayer = 1) {
          setTimeout(() => {
             console.log(waitingTime)
             if (numberOfPlayers === 1) {
-               waitingTime = Math.floor((Math.random() * 300) + 1000)
+               waitingTime = Math.floor((Math.random() * 1000) + 300)
                //Get computer's best move and update the UI
                player.getBestMove(board, !maximizing, best => {
                   const symbol = !maximizing ? 'cross' : 'circle'
@@ -181,7 +183,8 @@ function newGame(depth = -1, startingPlayer = 1) {
                modal.show()
             }
          }, waitingTime) 
-      }, true)
+         event.stopPropagation()
+      })
       
 
 
@@ -206,21 +209,24 @@ document.addEventListener("DOMContentLoaded", () => {
    modal.show()
 
    //Define the number of player
-   document.getElementById("1Player").addEventListener('click', () => {
+   document.getElementById("1Player").addEventListener('click', (event) => {
       numberOfPlayers = 1
-   }, true)
-   document.getElementById("2Players").addEventListener('click', () => {
+      event.stopPropagation()
+   })
+   document.getElementById("2Players").addEventListener('click', (event) => {
       numberOfPlayers = 2
       waitingTime = 0
-   }, true)
+      event.stopPropagation()
+   })
 
    //Start a new game with chosen options when new game button is clicked
-   document.getElementById("newGame").addEventListener('click', () => {
+   document.getElementById("newGame").addEventListener('click', (event) => {
       clickSong.play()
       const startingDIV = document.getElementById("starting")
       const starting = startingDIV.options[startingDIV.selectedIndex].value
       const depthDIV = document.getElementById("depth")
       const depth = depthDIV.options[depthDIV.selectedIndex].value
       newGame(depth, starting)
-   }, true)
+      event.stopPropagation()
+   })
 })
